@@ -10,6 +10,8 @@ There are only 2 prerequisites:
 
 - Having Terraform installed: it is pretty easy to install it if you haven’t already. You can find the instructions in my first article “Introduction to Terraform Modules.”
 - If you want to log in to the machines, you need to have an AWS pem key already created in the region of your choice and downloaded on your machine. See how to create a pem key here if you haven’t already.
+- AWS Credential( aws_access_key_id and aws_secret_access_key)
+- AWS Profile in case you have other AWS accounts.
 
 ## The files structure
 
