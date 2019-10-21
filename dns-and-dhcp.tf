@@ -20,6 +20,7 @@ resource "aws_vpc_dhcp_options_association" "dns_resolver" {
 # This throws this error:
 #   Error: aws_route53_zone.main: "vpc_id": [REMOVED] use 'vpc' configuration block instead
 # so change it accordingly:
+
 resource "aws_route53_zone" "main" {
   name = "${var.DnsZoneName}"
   vpc {
