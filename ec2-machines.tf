@@ -1,12 +1,12 @@
 resource "aws_instance" "phpapp" {
-  ami           = "${lookup(var.AmiLinux, var.region)}"
-  instance_type = "t2.micro"
+  ami                         = "${lookup(var.AmiLinux, var.region)}"
+  instance_type               = "t2.micro"
   associate_public_ip_address = "true"
-  subnet_id = "${aws_subnet.PublicAZA.id}"
-  vpc_security_group_ids = ["${aws_security_group.FrontEnd.id}"]
-  key_name = "${var.key_name}"
+  subnet_id                   = "${aws_subnet.PublicAZA.id}"
+  vpc_security_group_ids      = ["${aws_security_group.FrontEnd.id}"]
+  key_name                    = "${var.key_name}"
   tags {
-        Name = "phpapp"
+    Name = "phpapp"
   }
   user_data = <<HEREDOC
   #!/bin/bash
@@ -15,24 +15,24 @@ resource "aws_instance" "phpapp" {
   service httpd start
   chkconfig httpd on
   echo "<?php" >> /var/www/html/calldb.php
-  echo "\$conn = new mysqli('mydatabase.trick-bit.internal', 'root', 'secret', 'test');" >> /var/www/html/calldb.php
+  echo "\$conn = new mysqli('${aws_instance.database.private_ip}', 'root', 'secret', 'test');" >> /var/www/html/calldb.php
   echo "\$sql = 'SELECT * FROM mytable'; " >> /var/www/html/calldb.php
   echo "\$result = \$conn->query(\$sql); " >>  /var/www/html/calldb.php
-  echo "while(\$row = \$result->fetch_assoc()) { echo 'the value is: ' . \$row['mycol'] ;} " >> /var/www/html/calldb.php
+  echo "while(\$row = \$result->fetch_assoc()) { echo '<center><h1>the value is: ' . \$row['mycol'] . '</h1></center>';} " >> /var/www/html/calldb.php
   echo "\$conn->close(); " >> /var/www/html/calldb.php
   echo "?>" >> /var/www/html/calldb.php
 HEREDOC
 }
 
 resource "aws_instance" "database" {
-  ami           = "${lookup(var.AmiLinux, var.region)}"
-  instance_type = "t2.micro"
+  ami                         = "${lookup(var.AmiLinux, var.region)}"
+  instance_type               = "t2.micro"
   associate_public_ip_address = "false"
-  subnet_id = "${aws_subnet.PrivateAZA.id}"
-  vpc_security_group_ids = ["${aws_security_group.Database.id}"]
-  key_name = "${var.key_name}"
+  subnet_id                   = "${aws_subnet.PrivateAZA.id}"
+  vpc_security_group_ids      = ["${aws_security_group.Database.id}"]
+  key_name                    = "${var.key_name}"
   tags {
-        Name = "database"
+    Name = "database"
   }
   user_data = <<HEREDOC
   #!/bin/bash

@@ -71,6 +71,21 @@ terraform apply
 
 After a few minutes, the process should be completed and you can go to your AWS web console and read the public ip of your EC2 machine. Visit the url in your browser, and you will see the result of the php command.
 
+```bash
+✔ ~/projects/terraform/cout [master|✚ 2]
+00:08 $ aws running-instance --profile rbd_sys --region eu-west-2
+---------------------------------------------------------------------
+|                         DescribeInstances                         |
++----------+---------------+--------------+------------+------------+
+|   Name   |    PRI_IP     |   PUB_IP     | Platform   |   Type     |
++----------+---------------+--------------+------------+------------+
+|  phpapp  |  172.28.0.73  |  3.10.117.15 |  Linux     |  t2.micro  |
+|  database|  172.28.3.220 |  None        |  Linux     |  t2.micro  |
++----------+---------------+--------------+------------+------------+
+✔ ~/projects/terraform/cout [master|✚ 2]
+00:09 $
+```
+
 ### Testing the zone
 
 To test your internal DNS routing system, you can log in inside the web server machine to run a DNS query for the private zone like this:
@@ -86,3 +101,11 @@ If you try to do it from a machine outside the vpc, you will have:
 host mydatabase.linuxacademy.internal.
 Host mydatabase.linuxacademy.internal. not found: 3(NXDOMAIN)
 ```
+
+#### Issues
+
+There is currently one issue with this setup. The Internale DNS seems not to be working wher trying to access the databese.
+
+#### Todo
+
+- fix the internal DNS with apache and the database
