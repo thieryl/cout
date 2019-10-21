@@ -19,4 +19,68 @@ All variables are defined in the [variable.tf](variables.tf) file. Before you ru
 
 Every variable is of type String, except for the AmiLinux. This particular variable is a map and depends on the content of the region variable. You can add the region you wish to use in the map using the ami-id of the AWS Linux distribution.
 
-In the `network.tf` file, we set up the provider for AWS and the VPC declaration. Together with the Route53 configuration, the option specified for the vpc creation enables an internal name resolution for our VPC. As you may be aware, Terraform can be used to build infrastructures for many environments, such as AWS, Azure, Google Cloud, VMware, and many others. A full list is available here: https://www.terraform.io/docs/providers/index.html . In this article, we are using AWS as the provider.
+In the [network.tf](network.tf) file, we set up the provider for AWS and the VPC declaration. Together with the Route53 configuration, the option specified for the vpc creation enables an internal name resolution for our VPC. As you may be aware, Terraform can be used to build infrastructures for many environments, such as AWS, Azure, Google Cloud, VMware, and many others. A full list is available here: https://www.terraform.io/docs/providers/index.html . In this article, we are using AWS as the provider.
+
+When you start from scratch, you need to attach an internet gateway to your VPC and define a network ACL. There aren’t restriction at network ACL level because the restriction rules will be enforced by security group.
+
+As you can see, there are two routing tables: one for public access, and the other one for private access. In our case, we also need to have access to the internet from the database machine since we use it to install MySQL Server. We will use the AWS NAT Gateway in order to increase our security and be sure that there aren’t incoming connections coming from outside the database. As you can see, defining a NAT gateway is pretty easy since it consists of only four lines of code. It is important, though, to deploy it in a public subnet and associate an elastic ip to it. The depends_on allows us to avoid errors and create the NAT gateway only after the internet gateway is in the available state.
+
+One thing worth noting is that the data called `aws_availability_zones` provide the correct name of the availability zones in the chosen region. This way we don’t need to add letters to the region variable and we can avoid mistakes. For example, the North Virginia region where region b does not exist, and in other regions where there are 2 or 4 AZs.
+
+## Internal DNS and DHCP
+
+In this file [dns-and-dhcp.tf](dns-and-dhcp.tf), three things were accomplished: the private Route53 DNS zone was created, the association with the VPC was made, and the DNS record for the database was created. Terraform perform the actions in the right order, the last component in this file will be the database dns record because it depends on the private ip of the EC2 database machine. This machine will be allocated during the database creation.
+
+## Security
+
+In the file [securitygroups.tf](securitygroups.tf), we have two security groups: one for the web application, and another for the database. They both need to have the outbound (egress) rule to have internet access because yum will install the Apache and MySQL servers, but the connection to the MySQL port will be allowed only from instances that belong to the webapp security group.
+
+I have left the ssh port open only for debug reason, but you can also delete that rule.
+
+## EC2 Instances
+
+We chose an AWS Linux AMI. I loaded the userdata using the HEREDOC option, but you can also use an external file.
+
+### The database machine
+
+This machine is placed in the private subnet and has its security group. The userdata performs the following actions:
+
+- update the OS
+- install the MySQL server and run it
+- configure the root user to grant access from other machines
+- create a table in the test database and add one line inside
+
+### The Webapp machine
+
+It is placed in the public subnet so it is possible to reach it from your browser using port 80. The userdata performs the following actions:
+
+- update the OS
+- install the Apache web server and its php module
+- start the Apache
+- using the echo command place in the public directory, a php file that reads the value inside the database created in the other EC2
+
+### Running the terraform and connect to the application
+
+Create all files with extension .tf inside a directory, replace the values in the [variable.tf](variable.tf) as explained in the beginning of the document, and then run the command:
+
+```bash
+terraform apply
+```
+
+After a few minutes, the process should be completed and you can go to your AWS web console and read the public ip of your EC2 machine. Visit the url in your browser, and you will see the result of the php command.
+
+### Testing the zone
+
+To test your internal DNS routing system, you can log in inside the web server machine to run a DNS query for the private zone like this:
+
+```bash
+$ host mydatabase.linuxacademy.internal
+mydatabase.linuxacademy.internal has address 172.28.3.142
+```
+
+If you try to do it from a machine outside the vpc, you will have:
+
+```bash
+host mydatabase.linuxacademy.internal.
+Host mydatabase.linuxacademy.internal. not found: 3(NXDOMAIN)
+```
