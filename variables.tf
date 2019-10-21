@@ -1,12 +1,13 @@
 variable "region" {
-  default = "eu-west-1"
+  default = "eu-west-2"
 }
 variable "AmiLinux" {
   type = "map"
   default = {
-    eu-west-1 = "ami-9398d3e0" # Ireland
+    eu-west-1 = "ami-24506250" # Ireland
+    eu-west-2 = "ami-896369ed" # London
   }
-  description = "I add only 1 region, Ireland, to show the map feature but you can add all the regions that you need"
+  description = "I add only 2 regions Ireland and london, to show the map feature but you can add all the regions that you need"
 }
 /*
 variable "aws_access_key" {
@@ -43,7 +44,7 @@ variable "Subnet-Private-AzA-CIDR" {
   description = "the cidr of the subnet"
 }
 variable "key_name" {
-  default = "demotmp"
+  default = "cout"
   description = "the ssh key to use in the EC2 machines"
 }
 variable "DnsZoneName" {
