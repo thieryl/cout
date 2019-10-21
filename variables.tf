@@ -1,5 +1,5 @@
 variable "region" {
-  default = "us-west-1"
+  default = "eu-west-1"
 }
 variable "AmiLinux" {
   type = "map"
@@ -20,8 +20,8 @@ variable "aws_secret_key" {
 }
 */
 
-variable "aws_profie" {
-  default = ""
+variable "aws_profile" {
+  default = "rbd_sys"
   description = "the aws profile to be used"
 }
 
