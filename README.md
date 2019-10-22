@@ -13,6 +13,8 @@ There are only 2 prerequisites:
 - AWS Credential( aws_access_key_id and aws_secret_access_key)
 - AWS Profile in case you have other AWS accounts.
 - Modify the [variables.tf](variables.tf) and add the appropriate aws_access_key_id and aws_secret_access_key or the credential file.
+- website is available at `http://<pub_ip_of_phpapp/calldb.php`
+- webserver monitoring and alerting is done through monit URI is `http://<pub_ip_of_phpapp>:2812` (username:admin password : monit)
 
 ```json
 /* Uncomment me to supply the aws keys not recommended. Best to use the credentials file method
