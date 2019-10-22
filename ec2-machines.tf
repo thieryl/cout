@@ -46,6 +46,12 @@ resource "aws_instance" "phpapp" {
   echo "if failed host 127.0.0.1 port 22 protocol ssh then restart" >> /etc/monit.conf
   echo "if 5 restarts within 5 cycles then timeout" >> /etc/monit.conf
 
+  echo "check host mydatabase.tricky-bit.internal with address ${aws_instance.database.private_ip} " >> /etc/monit.conf
+  echo "start program = \"/usr/bin/ssh user@ipaddress /etc/init.d/sshd start\" " >> /etc/monit.conf
+  echo "stop program = \"/usr/bin/ssh user@ipaddress /etc/init.d/sshd stop\" " >> /etc/monit.conf
+  echo "if failed port 22 protocol ssh " >> /etc/monit.conf
+  echo "then alert " >> /etc/monit.conf
+
   sleep 5
   service monit on
   service monit start
