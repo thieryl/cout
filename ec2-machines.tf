@@ -32,7 +32,7 @@ resource "aws_instance" "phpapp" {
   echo "allow @monit           # allow users of group 'monit' to connect (rw) " >> /etc/monit.conf
   echo "allow @users readonly  # allow users of group 'users' to connect readonly " >> /etc/monit.conf
 
-  echo "check process httpd with pidfile /var/run/httpd.pid " >> /etc/monit.conf
+  echo "check process httpd with pidfile /var/run/httpd/httpd.pid " >> /etc/monit.conf
   echo "group apache " >> /etc/monit.conf
   echo "start program = \"/etc/init.d/httpd start\" " >> /etc/monit.conf
   echo "stop program = \"/etc/init.d/httpd stop\" " >> /etc/monit.conf
