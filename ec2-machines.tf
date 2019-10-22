@@ -15,13 +15,11 @@ resource "aws_instance" "phpapp" {
   service httpd start
   chkconfig httpd on
   echo "<?php" >> /var/www/html/calldb.php
-  echo "<H1><center>" >> /var/www/html/calldb.php
   echo "\$conn = new mysqli('${aws_instance.database.private_ip}', 'root', 'secret', 'test');" >> /var/www/html/calldb.php
   echo "\$sql = 'SELECT * FROM mytable'; " >> /var/www/html/calldb.php
   echo "\$result = \$conn->query(\$sql); " >>  /var/www/html/calldb.php
   echo "while(\$row = \$result->fetch_assoc()) { echo 'the value is: ' . \$row['mycol'];} " >> /var/www/html/calldb.php
   echo "\$conn->close(); " >> /var/www/html/calldb.php
-  echo "</center></H1>" >> /var/www/html/calldb.php
   echo "?>" >> /var/www/html/calldb.php
 
 HEREDOC
@@ -49,3 +47,15 @@ resource "aws_instance" "database" {
   mysql -u root -psecret -e "INSERT INTO mytable (mycol) values ('tricky-beast') ;" test
 HEREDOC
 }
+/*
+output "webapp_ip_address" {
+  value = "$aws_instance.phpapp.*.public_ip"
+}
+
+output "webapp_ip_public_address" {
+  value = "$aws_instance.phpapp.*.private_ip"
+}
+output "database_ip_address" {
+  value = "$aws_instance.database.*.private_ip"
+}
+*/
