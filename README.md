@@ -8,10 +8,35 @@ This AWS environment built using the Terraform automation. We will create everyt
 
 There are only 2 prerequisites:
 
-- Having Terraform installed: it is pretty easy to install it if you haven’t already. You can find the instructions in my first article “Introduction to Terraform Modules.”
-- If you want to log in to the machines, you need to have an AWS pem key already created in the region of your choice and downloaded on your machine. See how to create a pem key here if you haven’t already.
+- Having Terraform installed: it is pretty easy to install it if you haven’t already. You can find the instructions in [Getting started with Terraform](https://learn.hashicorp.com/terraform/getting-started/install.html)
+- If you want to log in to the machines, you need to have an _AWS pem_ key already created in the region of your choice and downloaded on your machine. See how to create a pem key here if you haven’t already.
 - AWS Credential( aws_access_key_id and aws_secret_access_key)
 - AWS Profile in case you have other AWS accounts.
+- Modify the [variables.tf](variables.tf) and add the appropriate aws_access_key_id and aws_secret_access_key or the credential file.
+
+```json
+/* Uncomment me to supply the aws keys not recommended. Best to use the credentials file method
+variable "aws_access_key" {
+  default = ""
+  description = "the user aws access key"
+}
+
+variable "aws_secret_key" {
+  default = ""
+  description = "the user aws secret key"
+}
+*/
+
+variable "aws_profile" {
+  default = "rbd_sys"
+  description = "the aws profile to be used"
+}
+
+variable "credentialsfile" {
+  default = "/Users/thieryl/.aws/credentials" #replace your home directory
+  description = "where your access and secret_key are stored, you create the file when you run the aws config"
+}
+```
 
 ## The files structure
 
@@ -66,10 +91,12 @@ It is placed in the public subnet so it is possible to reach it from your browse
 Create all files with extension .tf inside a directory, replace the values in the [variable.tf](variable.tf) as explained in the beginning of the document, and then run the command:
 
 ```bash
+terraform init
+terraform validate
 terraform apply
 ```
 
-After a few minutes, the process should be completed and you can go to your AWS web console and read the public ip of your EC2 machine. Visit the url in your browser, and you will see the result of the php command.
+After a few minutes, the process should be completed and you can go to your AWS web console and read the public ip of your EC2 machine. Visit the url `http://<pub_ip_of_phpapp/calldb.php` in your browser, and you will see the result of the php command.
 
 ```bash
 ✔ ~/projects/terraform/cout [master|✚ 2]
@@ -104,8 +131,9 @@ Host mydatabase.linuxacademy.internal. not found: 3(NXDOMAIN)
 
 #### Issues
 
-There is currently one issue with this setup. The Internale DNS seems not to be working wher trying to access the databese.
+There is currently one issue with this setup. The Internale DNS seems not to be working when trying to access the databese with apache.
 
 #### Todo
 
 - fix the internal DNS with apache and the database
+- add outputs of Server public ip and server private ip

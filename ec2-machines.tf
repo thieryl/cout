@@ -50,13 +50,13 @@ resource "aws_instance" "database" {
 HEREDOC
 }
 
-output "webapp_ip_address" {
+output "webapp_ip_public_address" {
   value = "${aws_instance.phpapp.*.public_ip}"
 }
 
-output "webapp_ip_public_address" {
+output "webapp_ip_private_address" {
   value = "${aws_instance.phpapp.*.private_ip}"
 }
-output "database_ip_address" {
+output "database_ip_private_address" {
   value = "${aws_instance.database.*.private_ip}"
 }
