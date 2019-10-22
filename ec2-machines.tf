@@ -14,6 +14,7 @@ resource "aws_instance" "phpapp" {
   yum install -y httpd24 php56 php56-mysqlnd monit
   service httpd start
   chkconfig httpd on
+  touch /var/www/html/index.html
   echo "<h1><center>" >> /var/www/html/calldb.php
   echo "<?php" >> /var/www/html/calldb.php
   echo "\$conn = new mysqli('${aws_instance.database.private_ip}', 'root', 'secret', 'test');" >> /var/www/html/calldb.php
@@ -38,6 +39,13 @@ resource "aws_instance" "phpapp" {
   echo "if failed host 127.0.0.1 port 80 " >> /etc/monit.conf
   echo "protocol http then restart " >> /etc/monit.conf
   echo "if 5 restarts within 5 cycles then timeout " >> /etc/monit.conf
+
+  echo "check process sshd with pidfile /var/run/sshd.pid" >> /etc/monit.conf
+  echo "start program \"/etc/init.d/sshd start\" " >> /etc/monit.conf
+  echo "stop program \"/etc/init.d/sshd stop\" " >> /etc/monit.conf
+  echo "if failed host 127.0.0.1 port 22 protocol ssh then restart" >> /etc/monit.conf
+  echo "if 5 restarts within 5 cycles then timeout" >> /etc/monit.conf
+
   sleep 5
   service monit on
   service monit start
