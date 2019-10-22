@@ -38,6 +38,7 @@ resource "aws_instance" "phpapp" {
   echo "if failed host 127.0.0.1 port 80 " >> /etc/monit.conf
   echo "protocol http then restart " >> /etc/monit.conf
   echo "if 5 restarts within 5 cycles then timeout " >> /etc/monit.conf
+  sleep 5
   service monit on
   service monit start
 HEREDOC
